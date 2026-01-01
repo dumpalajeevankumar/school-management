@@ -9,14 +9,55 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [authError, setAuthError] = useState("");
+
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    setError("");
+  /* ---------- VALIDATION ---------- */
 
-    if (!email || !password) {
-      setError("Please enter email and password");
+  const validateEmail = (value) => {
+    if (!value) return "Email is required";
+    if (!/^\S+@\S+\.\S+$/.test(value)) return "Please enter a valid email";
+    return "";
+  };
+
+  const validatePassword = (value) => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters";
+    return "";
+  };
+
+  /* ---------- HANDLERS ---------- */
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    setEmailError(validateEmail(value));
+    setAuthError("");
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setPasswordError(validatePassword(value));
+    setAuthError("");
+  };
+
+  const handleLogin = async () => {
+    setAuthError("");
+
+    const emailErr = validateEmail(email);
+    const passErr = validatePassword(password);
+
+    setEmailError(emailErr);
+    setPasswordError(passErr);
+
+    // 🔴 SHOW RED BAR FOR VALIDATION ERRORS TOO
+    if (emailErr || passErr) {
+      setAuthError("Invalid email or password");
       return;
     }
 
@@ -25,24 +66,16 @@ export default function Login() {
 
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/login`,
-        {
-          email,
-          password,
-        }
+        { email, password }
       );
 
-      // ✅ ONLY navigate if backend explicitly says success
       if (res.data?.success === true) {
         navigate("/welcome");
       } else {
-        setError(res.data?.message || "Invalid credentials");
+        setAuthError("Invalid email or password");
       }
-    } catch (err) {
-      if (err.response?.status === 401) {
-        setError("Invalid email or password");
-      } else {
-        setError("Server error. Please try again later.");
-      }
+    } catch {
+      setAuthError("Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -55,34 +88,37 @@ export default function Login() {
         <img src={loginLogo} alt="EduSaaS" />
       </div>
 
-      {/* Title */}
       <h1 className="title">Welcome Back</h1>
       <p className="subtitle">Sign in to continue to EduSaaS</p>
 
-      {/* Login Card */}
       <div className="login-card">
-        <div className="input-wrapper">
+        {/* 🔴 RED AUTH ERROR BAR */}
+        {authError && <div className="auth-error">{authError}</div>}
+
+        {/* EMAIL */}
+        <div className={`input-wrapper ${emailError ? "error" : ""}`}>
           <span className="input-icon">✉</span>
           <input
             type="email"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
           />
         </div>
+        {emailError && <p className="field-error">{emailError}</p>}
 
-        <div className="input-wrapper">
+        {/* PASSWORD */}
+        <div className={`input-wrapper ${passwordError ? "error" : ""}`}>
           <span className="input-icon">🔒</span>
           <input
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
           />
           <span className="input-eye">👁</span>
         </div>
-
-        {error && <p className="error-text">{error}</p>}
+        {passwordError && <p className="field-error">{passwordError}</p>}
 
         <button
           className="login-btn"
@@ -92,9 +128,6 @@ export default function Login() {
           {loading ? "Signing In..." : "Sign In"}
         </button>
       </div>
-
-      {/* Forgot Password */}
-      <a className="forgot-link">Forgot Password?</a>
 
       {/* Demo Accounts */}
       <div className="demo-box">
@@ -117,6 +150,8 @@ export default function Login() {
           <span>parent@demo.edu</span>
         </div>
       </div>
+
+      <a className="forgot-link">Forgot Password?</a>
     </div>
   );
 }
