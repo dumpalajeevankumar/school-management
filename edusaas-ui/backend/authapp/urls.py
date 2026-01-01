@@ -8,3 +8,10 @@ urlpatterns = [
     path('user/update/', views.update_user, name='update_user'),
     path('logout/', views.logout, name='logout'),
 ]
+
+from django.urls import path
+from .views import health_check
+
+urlpatterns = [
+    path('health/', health_check),
+]

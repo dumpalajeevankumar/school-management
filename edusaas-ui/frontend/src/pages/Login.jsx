@@ -1,121 +1,66 @@
-import React, { useState } from 'react';
-import InputField from '../components/InputField';
-import Button from '../components/Button';
-import emailIcon from '../assets/icons/email.svg';
-import lockIcon from '../assets/icons/lock.svg';
-import eyeIcon from '../assets/icons/eye.svg';
-import '../styles/login.css';
+import "../styles/login.css";
+import loginLogo from "../assets/login.png";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Invalid email format';
-    }
-    
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:8000/api/auth/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        // Navigate to dashboard
-        window.location.href = '/dashboard';
-      } else {
-        setErrors({ form: 'Invalid credentials' });
-      }
-    } catch (error) {
-      setErrors({ form: 'Connection error. Please try again.' });
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function Login() {
+  const navigate = useNavigate();
 
   return (
-    <div className="login-container">
+    <div className="login-page">
+      {/* Logo */}
+      <div className="logo-box">
+        <img src={loginLogo} alt="EduSaaS" />
+      </div>
+
+      {/* Title */}
+      <h1 className="title">Welcome Back</h1>
+      <p className="subtitle">Sign in to continue to EduSaaS</p>
+
+      {/* Login Card */}
       <div className="login-card">
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          {errors.form && <div className="form-error">{errors.form}</div>}
-          
-          <InputField
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            icon={emailIcon}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={errors.email}
-          />
+        <div className="input-wrapper">
+          <span className="input-icon">✉</span>
+          <input type="email" placeholder="Email" />
+        </div>
 
-          <div className="password-field">
-            <InputField
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Enter your password"
-              icon={lockIcon}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-            />
-            <button
-              type="button"
-              className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label="Toggle password visibility"
-            >
-              <img src={eyeIcon} alt="Toggle" />
-            </button>
-          </div>
+        <div className="input-wrapper">
+          <span className="input-icon">🔒</span>
+          <input type="password" placeholder="Password" />
+          <span className="input-eye">👁</span>
+        </div>
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            loading={loading}
-            className="login-button"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </Button>
-        </form>
+        <button
+          className="login-btn"
+          onClick={() => navigate("/welcome")}
+        >
+          Sign In
+        </button>
+      </div>
 
-        <p className="signup-link">
-          Don't have an account? <a href="/signup">Sign up here</a>
-        </p>
+      {/* Forgot Password */}
+      <a className="forgot-link">Forgot Password?</a>
+
+      {/* Demo Accounts */}
+      <div className="demo-box">
+        <h3>Demo Accounts</h3>
+
+        <div className="demo-row">
+          <span>Admin</span>
+          <span>admin@demo.edu</span>
+        </div>
+        <div className="demo-row">
+          <span>Teacher</span>
+          <span>teacher@demo.edu</span>
+        </div>
+        <div className="demo-row">
+          <span>Student</span>
+          <span>student@demo.edu</span>
+        </div>
+        <div className="demo-row">
+          <span>Parent</span>
+          <span>parent@demo.edu</span>
+        </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

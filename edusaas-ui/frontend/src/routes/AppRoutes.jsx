@@ -1,18 +1,16 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Splash from '../pages/Splash';
-import Login from '../pages/Login';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Splash from "../pages/Splash";
+import Login from "../pages/Login";
+import Welcome from "../pages/Welcome";
 
-const AppRoutes = () => {
+export default function AppRoutes() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/welcome" element={<Welcome />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
-};
-
-export default AppRoutes;
+}
