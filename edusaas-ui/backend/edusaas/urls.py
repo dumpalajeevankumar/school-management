@@ -1,12 +1,7 @@
-"""
-URL configuration for edusaas project.
-"""
-
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/auth/', include('authapp.urls')),
+    path("admin/", admin.site.urls),
+    path("api/", include("authapp.urls")),
 ]
-

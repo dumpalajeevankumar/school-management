@@ -1,9 +1,52 @@
 import "../styles/login.css";
 import loginLogo from "../assets/login.png";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setError("");
+
+    if (!email || !password) {
+      setError("Please enter email and password");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/login`,
+        {
+          email,
+          password,
+        }
+      );
+
+      // ✅ ONLY navigate if backend explicitly says success
+      if (res.data?.success === true) {
+        navigate("/welcome");
+      } else {
+        setError(res.data?.message || "Invalid credentials");
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError("Invalid email or password");
+      } else {
+        setError("Server error. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-page">
@@ -20,20 +63,33 @@ export default function Login() {
       <div className="login-card">
         <div className="input-wrapper">
           <span className="input-icon">✉</span>
-          <input type="email" placeholder="Email" />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
 
         <div className="input-wrapper">
           <span className="input-icon">🔒</span>
-          <input type="password" placeholder="Password" />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <span className="input-eye">👁</span>
         </div>
 
+        {error && <p className="error-text">{error}</p>}
+
         <button
           className="login-btn"
-          onClick={() => navigate("/welcome")}
+          onClick={handleLogin}
+          disabled={loading}
         >
-          Sign In
+          {loading ? "Signing In..." : "Sign In"}
         </button>
       </div>
 

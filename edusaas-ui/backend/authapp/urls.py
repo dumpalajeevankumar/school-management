@@ -1,17 +1,6 @@
 from django.urls import path
-from . import views
+from .views import login_view
 
 urlpatterns = [
-    path('login/', views.login, name='login'),
-    path('register/', views.register, name='register'),
-    path('user/', views.get_user, name='get_user'),
-    path('user/update/', views.update_user, name='update_user'),
-    path('logout/', views.logout, name='logout'),
-]
-
-from django.urls import path
-from .views import health_check
-
-urlpatterns = [
-    path('health/', health_check),
+    path("login", login_view, name="login"),
 ]
