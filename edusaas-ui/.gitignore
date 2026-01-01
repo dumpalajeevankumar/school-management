@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Database
+db.sqlite3
+*.db
+*.sqlite
+
+# Build outputs
+/frontend/dist/
+/frontend/.next/
+/frontend/out/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# JWT and sensitive files
+.secret-key
+secrets.json
